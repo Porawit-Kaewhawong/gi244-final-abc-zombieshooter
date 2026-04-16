@@ -5,10 +5,12 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    public int hp = 5;
+    public int health = 5;
     public TextMeshProUGUI healthText;
     public float walkSpeed = 5.0f;
 
+    private float immunityFrame = 0.5f;
+    private float nextDamageTime;
     private float defaultSpeed;
     private Rigidbody rb;
     private Coroutine speedCoroutine;
@@ -22,7 +24,7 @@ public class PlayerController : MonoBehaviour
         
         defaultSpeed = walkSpeed;
 
-        healthText.text = "Health " + hp;
+        healthText.text = "Health " + health;
     }
 
     void Update()
@@ -60,6 +62,10 @@ public class PlayerController : MonoBehaviour
             Destroy(other.gameObject);
         }
 
+        if (other.CompareTag("Enemy"))
+        {
+            TakeDamage(1);
+        }
     }
 
     private IEnumerator SpeedBuff()
@@ -78,5 +84,19 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(7.5f);
 
         Enemy.isSlowDown = false;
+    }
+
+    private void TakeDamage(int damage)
+    {
+        if (Time.time >= nextDamageTime)
+        {
+            if (health > 0)
+            {
+                health -= damage;
+                healthText.text = "Health " + health;
+
+                nextDamageTime = Time.time + immunityFrame;
+            }
+        }
     }
 }

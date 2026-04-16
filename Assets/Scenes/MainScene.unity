@@ -1442,7 +1442,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   hp: 5
-  healthText: {fileID: 0}
+  healthText: {fileID: 820843496}
   walkSpeed: 5
 --- !u!54 &1521906447
 Rigidbody:

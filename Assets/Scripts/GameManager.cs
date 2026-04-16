@@ -60,17 +60,6 @@ public class GameManager : MonoBehaviour
         countdownText.text = "";
         waveText.text = "Wave " + (waveId + 1);
 
-        for (int i = 0; i < currentWave.totalEnemies ; i++)
-        {
-            int random = Random.Range(0, spawnPoints.Length);
-            Instantiate(
-                enemyPrefab,
-                spawnPoints[random].position + Vector3.up * 0.5f,
-                Quaternion.identity);
-
-            yield return new WaitForSeconds(currentWave.spawnInterval);
-        }
-
         for (int i = 0; i < currentWave.numberOfPowerUp; i++)
         {
             int random = Random.Range(0, powerUps.Length);
@@ -82,9 +71,20 @@ public class GameManager : MonoBehaviour
                 Random.Range(-spawnRange, spawnRange));
 
             Instantiate(
-                powerUps[random], 
-                powerUpSpawnArea.position + randomPosition, 
+                powerUps[random],
+                powerUpSpawnArea.position + randomPosition,
                 Quaternion.identity);
+        }
+
+        for (int i = 0; i < currentWave.totalEnemies ; i++)
+        {
+            int random = Random.Range(0, spawnPoints.Length);
+            Instantiate(
+                enemyPrefab,
+                spawnPoints[random].position + Vector3.up * 0.5f,
+                Quaternion.identity);
+
+            yield return new WaitForSeconds(currentWave.spawnInterval);
         }
     }
 }
