@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 [System.Serializable]
@@ -18,6 +19,8 @@ public class GameManager : MonoBehaviour
     public GameObject[] powerUps;
     public Transform[] spawnPoints;
     public Transform powerUpSpawnArea;
+    public TextMeshProUGUI waveText;
+    public TextMeshProUGUI countdownText;
 
     private Coroutine waveCoroutine;
 
@@ -38,8 +41,6 @@ public class GameManager : MonoBehaviour
             }
 
             yield return StartCoroutine(WaveSpawn(i));
-
-            Debug.Log("Wave " + currentWave + " is completed.");
         }
     }
 
@@ -47,12 +48,25 @@ public class GameManager : MonoBehaviour
     {
         Wave currentWave = waves[waveId];
 
-        yield return new WaitForSeconds(currentWave.delayStart);
+        float time = currentWave.delayStart;
+
+        while (time > 0)
+        {
+            countdownText.text = time.ToString("F1") + "s before next wave";
+            yield return new WaitForSeconds(0.1f);
+            time -= 0.1f;
+        }
+
+        countdownText.text = "";
+        waveText.text = "Wave " + (waveId + 1);
 
         for (int i = 0; i < currentWave.totalEnemies ; i++)
         {
             int random = Random.Range(0, spawnPoints.Length);
-            Instantiate(enemyPrefab, spawnPoints[random]);
+            Instantiate(
+                enemyPrefab,
+                spawnPoints[random].position + Vector3.up * 0.5f,
+                Quaternion.identity);
 
             yield return new WaitForSeconds(currentWave.spawnInterval);
         }

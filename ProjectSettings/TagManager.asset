@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - PowerUp
+  - EnemyDebuff
+  - Enemy
   layers:
   - Default
   - TransparentFX
