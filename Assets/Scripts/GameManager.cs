@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
 
     private Coroutine waveCoroutine;
 
-    void Start()
+    private void Start()
     {
         StartCoroutine(WaveControl());
     }

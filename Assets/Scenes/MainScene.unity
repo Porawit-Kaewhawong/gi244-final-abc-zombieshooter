@@ -1327,7 +1327,7 @@ GameObject:
   - component: {fileID: 1521906442}
   - component: {fileID: 1521906447}
   - component: {fileID: 1521906446}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -1442,8 +1442,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   health: 5
-  healthText: {fileID: 820843496}
   walkSpeed: 5
+  bulletSpeed: 10
+  healthText: {fileID: 820843496}
+  bulletPrefab: {fileID: 154451569958641183, guid: ef9a7faca8c7dce48b6572e42895ee45, type: 3}
+  mainCamera: {fileID: 330585545}
 --- !u!54 &1521906447
 Rigidbody:
   m_ObjectHideFlags: 0

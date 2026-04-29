@@ -6,10 +6,15 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     public int health = 5;
-    public TextMeshProUGUI healthText;
     public float walkSpeed = 5.0f;
+    public float bulletSpeed = 10f;
+    public float fireRate = 1f;
+    public TextMeshProUGUI healthText;
+    public GameObject bulletPrefab;
+    public Camera mainCamera;
 
     private float immunityFrame = 0.5f;
+    private float nextFireTime;
     private float nextDamageTime;
     private float defaultSpeed;
     private Rigidbody rb;
@@ -36,6 +41,27 @@ public class PlayerController : MonoBehaviour
         {
             rb.AddForce(moveDirection * walkSpeed);
         }
+
+        if (Input.GetButton("Fire1") && Time.time >= nextFireTime)
+        {
+            Shoot();
+
+            nextFireTime = Time.time + fireRate;
+        }
+    }
+
+    private void Shoot()
+    {
+        Vector3 mousePos = Input.mousePosition;
+
+        Vector3 screenPos = mainCamera.WorldToScreenPoint(transform.position);
+
+        Vector3 dir = (mousePos - screenPos).normalized;
+
+        GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        rb.linearVelocity = new Vector3(dir.x, 0, dir.y) * bulletSpeed;
     }
 
     private void OnTriggerEnter(Collider other)
