@@ -21,11 +21,13 @@ public class PlayerController : MonoBehaviour
     private Coroutine speedCoroutine;
     private Coroutine slowCoroutine;
     private InputAction moveAction;
+    private InputAction attackAction;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         moveAction = InputSystem.actions.FindAction("Move");
+        attackAction = InputSystem.actions.FindAction("Attack");
         
         defaultSpeed = walkSpeed;
 
@@ -42,7 +44,7 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(moveDirection * walkSpeed);
         }
 
-        if (Input.GetButton("Fire1") && Time.time >= nextFireTime)
+        if (attackAction.IsPressed() && Time.time >= nextFireTime)
         {
             Shoot();
 
@@ -52,7 +54,7 @@ public class PlayerController : MonoBehaviour
 
     private void Shoot()
     {
-        Vector3 mousePos = Input.mousePosition;
+        Vector3 mousePos = Mouse.current.position.ReadValue();
 
         Vector3 screenPos = mainCamera.WorldToScreenPoint(transform.position);
 
