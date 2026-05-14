@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class SaveData
@@ -148,7 +149,6 @@ public class GameManager : MonoBehaviour
         File.WriteAllText(savePath, json);
 
         UpdateHighScoreUI();
-        Debug.Log("High Scores Updated");
     }
 
     public void LoadHighScores()
@@ -174,5 +174,12 @@ public class GameManager : MonoBehaviour
     private void OnApplicationQuit()
     {
         SaveHighScores();
+    }
+
+    public void RestartGame()
+    {
+        SaveHighScores();
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

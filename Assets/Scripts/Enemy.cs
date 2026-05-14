@@ -9,6 +9,7 @@ public class Enemy : MonoBehaviour
     public float walkSpeed = 3.0f;
 
     private Rigidbody rb;
+    private bool isDead = false;
     private GameObject player;
 
     private void OnEnable()
@@ -30,26 +31,36 @@ public class Enemy : MonoBehaviour
     
     void Update()
     {
-        Vector3 direction = (player.transform.position - transform.position).normalized;
-
-        float currentSpeed = walkSpeed;
-
-        if (isSlowDown)
+        if (player != null)
         {
-            currentSpeed *= 0.5f;
-        }
+            Vector3 direction = (player.transform.position - transform.position).normalized;
 
-        if (rb.linearVelocity.magnitude < currentSpeed)
-        {
-            rb.AddForce(direction * currentSpeed);
+            float currentSpeed = walkSpeed;
+
+            if (isSlowDown)
+            {
+                currentSpeed *= 0.5f;
+            }
+
+            if (rb.linearVelocity.magnitude < currentSpeed)
+            {
+                rb.AddForce(direction * currentSpeed);
+            }
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        if (isDead) return;
+
         if (other.gameObject.CompareTag("Bullet"))
         {
-            Destroy(other.gameObject);
+            if (!other.gameObject.TryGetComponent<ChargeBullet>(out _))
+            {
+                isDead = true;
+
+                Destroy(other.gameObject);
+            }
             Destroy(gameObject);
             GameManager.instance.AddKill();
         }

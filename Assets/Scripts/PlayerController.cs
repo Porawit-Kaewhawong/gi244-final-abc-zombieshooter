@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Charge Bullet")]
     public GameObject chargeBulletPrefab;
-    public float chargeTime = 2f;
+    public float chargeTime = 3f;
     public float chargeBulletSpeed = 20f;
 
     private float currentCharge;
@@ -77,15 +78,15 @@ public class PlayerController : MonoBehaviour
             nextFireTime = Time.time + fireRate;
         }
 
-        if (Input.GetButtonDown("Fire2") && !isCharging)
+        if (Input.GetButtonDown("Fire2"))
         {
             isCharging = true;
             currentCharge = 0f;
+        }
 
-            if (Input.GetButton("Fire2"))
-            {
-                currentCharge += Time.deltaTime;
-            }
+        if (isCharging)
+        {
+            currentCharge += Time.deltaTime;
         }
 
         if (Input.GetButtonUp("Fire2") && isCharging)
@@ -185,6 +186,10 @@ public class PlayerController : MonoBehaviour
                 healthText.text = "Health " + health;
 
                 nextDamageTime = Time.time + immunityFrame;
+            }
+            else
+            {
+                GameManager.instance.RestartGame();
             }
         }
     }
