@@ -44,4 +44,14 @@ public class Enemy : MonoBehaviour
             rb.AddForce(direction * currentSpeed);
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Bullet"))
+        {
+            Destroy(other.gameObject);
+            Destroy(gameObject);
+            GameManager.instance.AddKill();
+        }
+    }
 }

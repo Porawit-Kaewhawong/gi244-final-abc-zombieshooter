@@ -2,16 +2,42 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 
 public class PlayerController : MonoBehaviour
 {
     public int health = 5;
     public float walkSpeed = 5.0f;
+
+    public Camera mainCamera;
+    public TextMeshProUGUI healthText;
+
+    [Header("Normal Bullet")]
+    public GameObject bulletPrefab;
     public float bulletSpeed = 10f;
     public float fireRate = 1f;
-    public TextMeshProUGUI healthText;
-    public GameObject bulletPrefab;
-    public Camera mainCamera;
+
+    [Header("Charge Bullet")]
+    public GameObject chargeBulletPrefab;
+    public float chargeTime = 2f;
+    public float chargeBulletSpeed = 20f;
+
+    private float currentCharge;
+    private bool isCharging = false;
+
+    [Header("Bomber Bullet")]
+    public GameObject bomberBulletPrefeb;
+    public float bomberBulletSpeed = 15f;
+    public float bomberCooldown = 10f;
+
+    private float nextbomberTime;
+
+    [Header("Homing Bullet")]
+    public GameObject homingBulletPrefab;
+    public float homingBulletSpeed = 15f;
+    public float homingCooldown = 5f;
+
+    private float nextHomingTime;
 
     private float immunityFrame = 0.5f;
     private float nextFireTime;
@@ -21,14 +47,12 @@ public class PlayerController : MonoBehaviour
     private Coroutine speedCoroutine;
     private Coroutine slowCoroutine;
     private InputAction moveAction;
-    private InputAction attackAction;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         moveAction = InputSystem.actions.FindAction("Move");
-        attackAction = InputSystem.actions.FindAction("Attack");
-        
+
         defaultSpeed = walkSpeed;
 
         healthText.text = "Health " + health;
@@ -36,6 +60,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        // Movement
         var moveInput = moveAction.ReadValue<Vector2>();
         var moveDirection = new Vector3(moveInput.x, 0, moveInput.y);
 
@@ -44,26 +69,62 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(moveDirection * walkSpeed);
         }
 
-        if (attackAction.IsPressed() && Time.time >= nextFireTime)
+        // Fire Action
+        if (Input.GetButton("Fire1") && Time.time >= nextFireTime)
         {
-            Shoot();
+            FireProjectile(bulletPrefab, bulletSpeed);
 
             nextFireTime = Time.time + fireRate;
         }
+
+        if (Input.GetButtonDown("Fire2") && !isCharging)
+        {
+            isCharging = true;
+            currentCharge = 0f;
+
+            if (Input.GetButton("Fire2"))
+            {
+                currentCharge += Time.deltaTime;
+            }
+        }
+
+        if (Input.GetButtonUp("Fire2") && isCharging)
+        {
+            isCharging = false;
+
+            if (currentCharge >= chargeTime)
+            {
+                FireProjectile(chargeBulletPrefab, chargeBulletSpeed);
+            }
+        }
+
+        if (Input.GetMouseButtonDown(2) && Time.time >= nextbomberTime)
+        {
+            FireProjectile(bomberBulletPrefeb, bomberBulletSpeed);
+
+            nextbomberTime = Time.time + bomberCooldown;
+        }
+
+        if (Input.GetKeyDown(KeyCode.E) && Time.time >= nextHomingTime)
+        {
+            FireProjectile(homingBulletPrefab, homingBulletSpeed);
+
+            nextHomingTime = Time.time + homingCooldown;
+        }
     }
 
-    private void Shoot()
+    private void FireProjectile(GameObject selectedBullet, float selectedSpeed)
     {
-        Vector3 mousePos = Mouse.current.position.ReadValue();
+        Vector3 mousePos = Input.mousePosition;
 
         Vector3 screenPos = mainCamera.WorldToScreenPoint(transform.position);
 
         Vector3 dir = (mousePos - screenPos).normalized;
 
-        GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+        GameObject bullet = Instantiate(selectedBullet, transform.position, Quaternion.identity);
 
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
-        rb.linearVelocity = new Vector3(dir.x, 0, dir.y) * bulletSpeed;
+        rb.linearVelocity = new Vector3(dir.x, 0, dir.y) * selectedSpeed;
     }
 
     private void OnTriggerEnter(Collider other)
